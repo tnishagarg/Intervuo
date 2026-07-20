@@ -251,7 +251,7 @@ const base64 = dataUrl.split(",")[1];
       restartAudioRecording();
     };
 
-    const interval = setInterval(cycleVoiceAnalysis, 9000);
+    const interval = setInterval(cycleVoiceAnalysis, 5000);
     return () => clearInterval(interval);
   }, [micOn, paused]);
 

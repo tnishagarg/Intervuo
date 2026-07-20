@@ -97,7 +97,13 @@ def analyze_voice():
         if len(y) < sr * 0.5:
             return jsonify({"mood": "Neutral", "reason": "Audio too short"})
 
-        f0, voiced_flag, _ = librosa.pyin(y, fmin=librosa.note_to_hz('C2'), fmax=librosa.note_to_hz('C7'))
+        f0, voiced_flag, _ = librosa.pyin(
+    y,
+    fmin=librosa.note_to_hz('C2'),
+    fmax=librosa.note_to_hz('C7'),
+    hop_length=512,       # default 512, but explicit here for clarity
+    frame_length=1024     # smaller frame = faster, still accurate for speech
+)
         f0_clean = f0[~np.isnan(f0)]
         pitch_std = float(np.std(f0_clean)) if len(f0_clean) > 0 else 0
 
