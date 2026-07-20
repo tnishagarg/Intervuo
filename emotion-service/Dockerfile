@@ -32,5 +32,6 @@ COPY . .
 EXPOSE 5001
 
 ENV FLASK_ENV=production
+ENV PYTHONUNBUFFERED=1
 
-CMD ["python", "app.py"]
+CMD ["python", "-u","app.py"]
