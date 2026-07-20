@@ -1,5 +1,16 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+import cv2
+import os
+
+# Ensure the haarcascade file exists where cv2/fer expects it
+_cascade_dir = os.path.dirname(cv2.data.haarcascades) if hasattr(cv2, 'data') else None
+_target_path = os.path.join(cv2.data.haarcascades, "haarcascade_frontalface_default.xml") if _cascade_dir else None
+if _target_path and not os.path.exists(_target_path):
+    os.makedirs(os.path.dirname(_target_path), exist_ok=True)
+    import shutil
+    shutil.copy("/usr/local/share/haarcascades/haarcascade_frontalface_default.xml", _target_path)
+
 from fer.fer import FER
 import cv2
 import numpy as np

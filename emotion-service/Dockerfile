@@ -10,9 +10,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libglib2.0-0 \
     libsm6 \
     libxext6 \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
+
+# Manually fetch the Haar Cascade file, since opencv packages sometimes
+# don't ship their data/ folder correctly in slim Docker images
+RUN mkdir -p /usr/local/share/haarcascades && \
+    curl -o /usr/local/share/haarcascades/haarcascade_frontalface_default.xml \
+    https://raw.githubusercontent.com/opencv/opencv/master/data/haarcascades/haarcascade_frontalface_default.xml
 
 # Install Python deps first (better Docker layer caching)
 COPY requirements.txt .
