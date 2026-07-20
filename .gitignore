@@ -1,0 +1,6 @@
+emotion-service/venv/
+intervuo-client/node_modules/
+intervuo-server/node_modules/
+__pycache__/
+*.pyc
+.env
