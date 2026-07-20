@@ -1,4 +1,4 @@
-FROM python:3.10-slim
+FROM python:3.11-slim
 
 # System dependencies:
 # - ffmpeg: required by imageio_ffmpeg / subprocess call in analyze-voice
