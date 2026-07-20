@@ -2,7 +2,7 @@
 
 Intervuo is an AI-powered mock interview platform. It reads your resume, generates personalized interview questions with Google's Gemini AI, listens to your spoken answers in real time, analyzes your facial expressions and vocal tone to detect confidence and nervousness, and gives you a detailed, honest performance report.
 
-**Live:** (https://intervuo-u07e.onrender.com/)
+**Live:** https://intervuo-u07e.onrender.com/
 
 ## Tech Stack
 
