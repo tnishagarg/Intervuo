@@ -26,7 +26,7 @@ def webm_bytes_to_wav_bytes(webm_bytes):
 app = Flask(__name__)
 CORS(app)
 
-detector = FER(mtcnn=True)
+detector = FER(mtcnn=False)
 
 CONFIDENCE_THRESHOLD = 0.45
 
