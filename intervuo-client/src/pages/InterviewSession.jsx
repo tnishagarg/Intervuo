@@ -193,23 +193,30 @@ export default function InterviewSession() {
   // Continuous FACE detection every 4s
   useEffect(() => {
     if (!cameraOn) return;
+    let cancelled = false;
+    let inFlight = false;
 
     const captureAndAnalyze = async () => {
+      if (inFlight) return; // skip this tick if the previous call hasn't finished
       const video = videoRef.current;
       const canvas = canvasRef.current;
       if (!video || !canvas || video.videoWidth === 0) return;
 
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      const ctx = canvas.getContext("2d");
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      // Downscale to a fixed max width to reduce payload + server-side memory use
+const MAX_WIDTH = 320;
+const scale = Math.min(1, MAX_WIDTH / video.videoWidth);
+canvas.width = video.videoWidth * scale;
+canvas.height = video.videoHeight * scale;
+const ctx = canvas.getContext("2d");
+ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-      const dataUrl = canvas.toDataURL("image/jpeg", 0.7);
-      const base64 = dataUrl.split(",")[1];
+const dataUrl = canvas.toDataURL("image/jpeg", 0.6);
+const base64 = dataUrl.split(",")[1];
 
+      inFlight = true;
       try {
-        const res = await api.post("/emotion/analyze", { image: base64 });
-        if (res.data?.mood) {
+        const res = await api.post("/emotion/analyze", { image: base64 }, { timeout: 45000 });
+        if (!cancelled && res.data?.mood) {
           setMoodHistory((prev) => {
             const updated = [...prev, res.data.mood];
             const recent = updated.slice(-3);
@@ -224,13 +231,17 @@ export default function InterviewSession() {
         }
       } catch (err) {
         console.error("Emotion analysis failed:", err);
+      } finally {
+        inFlight = false;
       }
     };
 
-    const interval = setInterval(captureAndAnalyze, 4000);
-    return () => clearInterval(interval);
+    const interval = setInterval(captureAndAnalyze, 7000);
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
   }, [cameraOn]);
-
   // Continuous VOICE detection every 6s
   useEffect(() => {
     if (!micOn || paused) return;
@@ -240,7 +251,7 @@ export default function InterviewSession() {
       restartAudioRecording();
     };
 
-    const interval = setInterval(cycleVoiceAnalysis, 6000);
+    const interval = setInterval(cycleVoiceAnalysis, 9000);
     return () => clearInterval(interval);
   }, [micOn, paused]);
 
